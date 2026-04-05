@@ -8,7 +8,7 @@
   <link rel="apple-touch-icon" href="logo.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <title>Hair Mash POS | Products & Stock Take</title>
+  <title>MONACO POS | Products & Stock Take</title>
   <style>
     :root {
       --primary: #003366;
@@ -692,7 +692,7 @@
   <header>
     <div class="header-logo">
       <img src="logo.png" alt="Logo" onerror="this.style.display='none'">
-      <span>Hair Mash POS</span>
+      <span>MONACO POS</span>
     </div>
     <div class="user-info">
       <span id="welcomeMessage"></span>
@@ -1923,7 +1923,7 @@
       const doc = new jsPDF('landscape');
       
       doc.setFontSize(18);
-      doc.text('Hair Mash Point Of Sale', 14, 22);
+      doc.text('MONACO Point Of Sale', 14, 22);
       doc.setFontSize(12);
       doc.text(`Current Stock Report - ${currentBranch}`, 14, 32);
       doc.text(`Generated: ${new Date().toLocaleString()}`, 14, 38);
@@ -1979,7 +1979,7 @@
       const doc = new jsPDF();
       
       doc.setFontSize(18);
-      doc.text('Hair Mash Point Of Sale', 14, 22);
+      doc.text('MONACO Point Of Sale', 14, 22);
       doc.setFontSize(12);
       doc.text(`Stock Take Variance Report - ${document.getElementById('stockTakeBranch').value}`, 14, 32);
       doc.text(`Generated: ${new Date().toLocaleString()}`, 14, 38);
@@ -2083,7 +2083,7 @@
       const doc = new jsPDF('landscape');
       
       doc.setFontSize(18);
-      doc.text('Hair Mash Point Of Sale', 14, 22);
+      doc.text('MONACO Point Of Sale', 14, 22);
       doc.setFontSize(12);
       doc.text(`Stock Take History - ${document.getElementById('historyBranch').value}`, 14, 32);
       doc.text(`Period: ${document.getElementById('historyStartDate').value} to ${document.getElementById('historyEndDate').value}`, 14, 38);
