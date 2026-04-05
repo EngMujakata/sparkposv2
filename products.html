@@ -1,0 +1,2182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <meta name="theme-color" content="#003366">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="logo.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Hair Mash POS | Products & Stock Take</title>
+  <style>
+    :root {
+      --primary: #003366;
+      --primary-light: #004080;
+      --secondary: #4CAF50;
+      --danger: #f44336;
+      --warning: #ff9800;
+      --info: #2196F3;
+      --light: #f8f9fa;
+      --dark: #212529;
+      --gray: #6c757d;
+      --border-radius: 0.5rem;
+      --box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background-color: #f0f4f8;
+      color: var(--dark);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      -webkit-tap-highlight-color: transparent;
+    }
+    
+    /* Header */
+    header {
+      background: var(--primary);
+      color: white;
+      padding: 0.5rem 0.75rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    
+    .header-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .header-logo img {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+    }
+    
+    .header-logo span {
+      font-weight: 600;
+      font-size: 1rem;
+    }
+    
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 0.9rem;
+    }
+    
+    .logout-btn {
+      padding: 0.3rem 0.6rem;
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+    
+    /* Main Container */
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0.75rem;
+      flex: 1;
+      margin-bottom: 70px;
+      width: 100%;
+    }
+    
+    /* Tabs */
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.25rem;
+      margin-bottom: 1rem;
+      background: white;
+      padding: 0.4rem;
+      border-radius: 2rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    
+    .tab {
+      padding: 0.6rem 0.25rem;
+      border-radius: 2rem;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.2s;
+      flex: 1 1 auto;
+      text-align: center;
+      min-width: 70px;
+      font-size: 0.8rem;
+      white-space: nowrap;
+    }
+    
+    .tab.active {
+      background: var(--primary);
+      color: white;
+    }
+    
+    .tab-content {
+      display: none;
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+    
+    /* Cards */
+    .card {
+      background: white;
+      border-radius: 1rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      padding: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+    
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid #e9ecef;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--primary);
+    }
+    
+    /* Forms */
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 0.5rem;
+    }
+    
+    .form-group {
+      margin-bottom: 0.5rem;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 0.2rem;
+      font-weight: 500;
+      font-size: 0.8rem;
+    }
+    
+    input, select, textarea {
+      width: 100%;
+      padding: 0.6rem;
+      border: 2px solid #e9ecef;
+      border-radius: var(--border-radius);
+      font-size: 0.95rem;
+      transition: all 0.2s;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+    
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(0, 51, 102, 0.1);
+    }
+    
+    /* Buttons */
+    .btn {
+      padding: 0.6rem 1rem;
+      border: none;
+      border-radius: var(--border-radius);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 0.85rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      -webkit-tap-highlight-color: transparent;
+    }
+    
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-success { background: var(--secondary); color: white; }
+    .btn-danger { background: var(--danger); color: white; }
+    .btn-warning { background: var(--warning); color: white; }
+    .btn-info { background: var(--info); color: white; }
+    
+    .btn-sm {
+      padding: 0.4rem 0.6rem;
+      font-size: 0.75rem;
+    }
+    
+    .btn:active {
+      transform: scale(0.97);
+    }
+    
+    /* Search Bar */
+    .search-bar {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
+      flex-wrap: wrap;
+    }
+    
+    .search-bar input {
+      flex: 1;
+      min-width: 150px;
+    }
+    
+    /* Table */
+    .table-container {
+      overflow-x: auto;
+      border-radius: 0.5rem;
+      border: 1px solid #e9ecef;
+      -webkit-overflow-scrolling: touch;
+      margin: 0 -0.25rem;
+      max-height: 60vh;
+      overflow-y: auto;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 700px;
+    }
+    
+    th {
+      background: var(--primary);
+      color: white;
+      padding: 0.6rem 0.4rem;
+      text-align: left;
+      font-weight: 500;
+      white-space: nowrap;
+      font-size: 0.8rem;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    
+    td {
+      padding: 0.6rem 0.4rem;
+      border-bottom: 1px solid #e9ecef;
+      font-size: 0.8rem;
+    }
+    
+    tr:hover {
+      background: #f8f9fa;
+    }
+    
+    /* Stock indicators */
+    .stock-high { color: var(--secondary); font-weight: 600; }
+    .stock-medium { color: var(--warning); font-weight: 600; }
+    .stock-low { color: var(--danger); font-weight: 600; }
+    
+    /* Action buttons */
+    .action-btns {
+      display: flex;
+      gap: 0.2rem;
+      flex-wrap: wrap;
+    }
+    
+    /* Summary Cards */
+    .summary-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
+    }
+    
+    .summary-card {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      color: white;
+      padding: 0.75rem;
+      border-radius: 0.75rem;
+    }
+    
+    .summary-label {
+      font-size: 0.7rem;
+      opacity: 0.9;
+      margin-bottom: 0.2rem;
+    }
+    
+    .summary-value {
+      font-size: 1.2rem;
+      font-weight: 700;
+      word-break: break-word;
+    }
+    
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 2000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      align-items: center;
+      justify-content: center;
+      padding: 0.5rem;
+    }
+    
+    .modal.show {
+      display: flex;
+    }
+    
+    .modal-content {
+      background: white;
+      border-radius: 1rem;
+      width: 100%;
+      max-width: 500px;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    
+    .modal-header {
+      padding: 0.75rem;
+      border-bottom: 1px solid #e9ecef;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      background: white;
+      z-index: 10;
+    }
+    
+    .modal-title {
+      color: var(--primary);
+      font-weight: 600;
+      font-size: 1rem;
+    }
+    
+    .modal-body {
+      padding: 0.75rem;
+    }
+    
+    .modal-footer {
+      padding: 0.75rem;
+      border-top: 1px solid #e9ecef;
+      display: flex;
+      gap: 0.5rem;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+      position: sticky;
+      bottom: 0;
+      background: white;
+    }
+    
+    .close {
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--gray);
+      padding: 0 0.5rem;
+    }
+    
+    /* Loading */
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.8);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 3000;
+      padding: 1rem;
+    }
+    
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 0.8s linear infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    .loading-text {
+      color: white;
+      margin-top: 0.75rem;
+      font-size: 0.9rem;
+    }
+    
+    /* Footer */
+    footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: white;
+      box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      padding: 0.25rem 0;
+      z-index: 1000;
+    }
+    
+    .footer-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: var(--gray);
+      text-decoration: none;
+      font-size: 0.6rem;
+      padding: 0.3rem 0;
+    }
+    
+    .footer-item.active {
+      color: var(--primary);
+    }
+    
+    .footer-icon {
+      font-size: 1.1rem;
+      margin-bottom: 0.1rem;
+    }
+    
+    /* Variance cell */
+    .variance-positive { color: var(--secondary); font-weight: 600; }
+    .variance-negative { color: var(--danger); font-weight: 600; }
+    
+    /* Stock take table */
+    .counted-input {
+      width: 70px;
+      padding: 0.3rem;
+      text-align: right;
+      font-size: 0.8rem;
+      border: 1px solid #ced4da;
+      border-radius: 0.25rem;
+    }
+    
+    /* Hidden update panel */
+    .update-panel {
+      display: none;
+      margin-bottom: 0.75rem;
+      border: 2px solid var(--primary);
+      border-radius: 1rem;
+      padding: 0.75rem;
+      background: #f8f9fa;
+    }
+    
+    .update-panel.show {
+      display: block;
+    }
+    
+    /* Branch filter */
+    .branch-filter {
+      display: flex;
+      gap: 0.25rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    
+    .branch-filter select {
+      width: auto;
+      padding: 0.4rem;
+      font-size: 0.8rem;
+    }
+    
+    /* Search suggestions */
+    .suggestions-list {
+      position: absolute;
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 0.5rem;
+      max-height: 200px;
+      overflow-y: auto;
+      z-index: 1000;
+      width: calc(100% - 2rem);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    .suggestion-item {
+      padding: 0.5rem;
+      cursor: pointer;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .suggestion-item:hover {
+      background: #f0f4f8;
+    }
+    
+    /* Profit display */
+    .profit-preview {
+      background: #e8f5e9;
+      padding: 0.75rem;
+      border-radius: 0.5rem;
+      margin-top: 0.75rem;
+    }
+    
+    .profit-preview h4 {
+      color: var(--secondary);
+      margin-bottom: 0.5rem;
+    }
+    
+    /* Info text */
+    .text-info {
+      color: var(--info);
+      font-size: 0.8rem;
+      margin-top: 0.5rem;
+    }
+    
+    /* Touch-friendly improvements */
+    button, .tab, select, input[type="checkbox"], .footer-item {
+      touch-action: manipulation;
+    }
+    
+    /* Better spacing for mobile */
+    @media (max-width: 768px) {
+      .tabs { 
+        border-radius: 1.5rem; 
+        padding: 0.3rem;
+      }
+      .tab { 
+        padding: 0.5rem 0.2rem; 
+        min-width: 60px; 
+        font-size: 0.7rem;
+      }
+      .summary-value { 
+        font-size: 1.1rem; 
+      }
+      .card {
+        padding: 0.6rem;
+      }
+      .card-title {
+        font-size: 0.95rem;
+      }
+      .btn {
+        padding: 0.5rem 0.7rem;
+        font-size: 0.8rem;
+      }
+      .form-grid {
+        gap: 0.4rem;
+      }
+      input, select {
+        padding: 0.5rem;
+        font-size: 0.9rem;
+      }
+      .header-logo span {
+        font-size: 0.9rem;
+      }
+      .user-info span {
+        display: none;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .tab {
+        font-size: 0.65rem;
+        padding: 0.4rem 0.1rem;
+        min-width: 50px;
+      }
+      .summary-value {
+        font-size: 1rem;
+      }
+      .summary-label {
+        font-size: 0.65rem;
+      }
+      .footer-item {
+        font-size: 0.55rem;
+      }
+      .footer-icon {
+        font-size: 1rem;
+      }
+      .card-title {
+        font-size: 0.9rem;
+      }
+      .btn-sm {
+        padding: 0.3rem 0.5rem;
+        font-size: 0.7rem;
+      }
+    }
+    
+    /* Landscape mode optimization */
+    @media (max-height: 500px) and (orientation: landscape) {
+      header {
+        padding: 0.3rem 0.5rem;
+      }
+      .tabs {
+        margin-bottom: 0.5rem;
+      }
+      .card {
+        padding: 0.5rem;
+      }
+      footer {
+        padding: 0.1rem 0;
+      }
+    }
+    
+    /* Better touch targets */
+    .tab, .btn, .footer-item, .close, select, input[type="checkbox"] {
+      min-height: 44px;
+      min-width: 44px;
+    }
+    
+    .tab {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .btn-sm {
+      min-height: 36px;
+      min-width: 36px;
+    }
+    
+    /* Improved scrolling */
+    .table-container {
+      -webkit-overflow-scrolling: touch;
+    }
+    
+    /* Better modal scrolling */
+    .modal-content {
+      -webkit-overflow-scrolling: touch;
+    }
+    
+    /* Fix for iOS input zoom */
+    @media screen and (-webkit-min-device-pixel-ratio:0) { 
+      select,
+      textarea,
+      input {
+        font-size: 16px;
+      }
+    }
+    
+    /* Prevent text overflow */
+    td, th {
+      word-break: break-word;
+    }
+    
+    /* Better focus states for touch */
+    .tab:active, .btn:active, .footer-item:active {
+      opacity: 0.7;
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
+</head>
+<body>
+  <header>
+    <div class="header-logo">
+      <img src="logo.png" alt="Logo" onerror="this.style.display='none'">
+      <span>Hair Mash POS</span>
+    </div>
+    <div class="user-info">
+      <span id="welcomeMessage"></span>
+      <div class="avatar" id="userAvatar">A</div>
+      <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i></button>
+    </div>
+  </header>
+
+  <div class="container">
+    <!-- Tabs -->
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('view')">View</div>
+      <div class="tab" onclick="switchTab('stocktake')">Stock Take</div>
+      <div class="tab" onclick="switchTab('history')">History</div>
+    </div>
+
+    <!-- Hidden Update Product Panel -->
+    <div id="updatePanel" class="update-panel">
+      <div class="card-header">
+        <h2 class="card-title">Update Product Details</h2>
+        <button class="btn btn-sm btn-danger" onclick="hideUpdatePanel()"><i class="fas fa-times"></i></button>
+      </div>
+      
+      <form id="updateProductForm">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Branch *</label>
+            <select id="updateBranch" required>
+              <option value="Main">Main</option>
+              <option value="Branch2">Branch 2</option>
+              <option value="Branch3">Branch 3</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label>Product Code *</label>
+            <input type="text" id="updateCode" readonly required>
+          </div>
+          
+          <div class="form-group">
+            <label>Product Name</label>
+            <input type="text" id="updateProduct" placeholder="New product name">
+          </div>
+          
+          <div class="form-group">
+            <label>Cost</label>
+            <input type="number" id="updateCost" step="0.01" min="0" placeholder="New cost">
+          </div>
+          
+          <div class="form-group">
+            <label>Price</label>
+            <input type="number" id="updatePrice" step="0.01" min="0" placeholder="New price">
+          </div>
+          
+          <div class="form-group">
+            <label>TAX %</label>
+            <input type="number" id="updateTax" step="0.1" placeholder="New tax %">
+          </div>
+          
+          <div class="form-group">
+            <label>Item Type</label>
+            <select id="updateItem">
+              <option value="">Keep Current</option>
+              <option value="each">Each</option>
+              <option value="kg">Kilogram</option>
+              <option value="litre">Litre</option>
+              <option value="box">Box</option>
+              <option value="pack">Pack</option>
+            </select>
+          </div>
+        </div>
+        
+        <div style="display: flex; gap: 0.5rem; justify-content: flex-end; flex-wrap: wrap;">
+          <button type="button" class="btn btn-danger" onclick="hideUpdatePanel()">Cancel</button>
+          <button type="submit" class="btn btn-warning">
+            <i class="fas fa-edit"></i> Update
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- View Products Tab -->
+    <div id="tab-view" class="tab-content active">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Product Inventory</h2>
+          <div class="branch-filter">
+            <label style="font-size: 0.8rem;">Branch:</label>
+            <select id="viewBranchSelect" onchange="loadProducts()" style="width: auto;">
+              <option value="Main">Main</option>
+              <option value="Branch2">Br 2</option>
+              <option value="Branch3">Br 3</option>
+            </select>
+            <button class="btn btn-primary btn-sm" onclick="loadProducts()">
+              <i class="fas fa-sync-alt"></i>
+            </button>
+            <button class="btn btn-success btn-sm" onclick="exportCurrentStockPDF()">
+              <i class="fas fa-file-pdf"></i>
+            </button>
+            <button class="btn btn-warning btn-sm" onclick="openStockModal()">
+              <i class="fas fa-plus-circle"></i> Stock
+            </button>
+          </div>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="summary-cards" id="summaryCards">
+          <div class="summary-card">
+            <div class="summary-label">Total Products</div>
+            <div class="summary-value" id="totalProducts">0</div>
+          </div>
+          <div class="summary-card">
+            <div class="summary-label">Total Stock</div>
+            <div class="summary-value" id="totalStock">0</div>
+          </div>
+          <div class="summary-card">
+            <div class="summary-label">Total Value</div>
+            <div class="summary-value" id="totalValue">$0</div>
+          </div>
+        </div>
+
+        <!-- Search within view -->
+        <div class="search-bar">
+          <input type="text" id="viewSearch" placeholder="Search by name or code..." onkeyup="filterProducts()">
+          <button class="btn btn-primary btn-sm" onclick="filterProducts()">
+            <i class="fas fa-search"></i>
+          </button>
+          <button class="btn btn-info btn-sm" onclick="clearFilter()">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+
+        <!-- Products Table (scrollable, shows 10 rows then scroll) -->
+        <div class="table-container">
+          <table id="productsTable">
+            <thead>
+              <tr>
+                <th>Code</th>
+                <th>Product</th>
+                <th>Cost</th>
+                <th>Price</th>
+                <th>Stock</th>
+                <th>Value</th>
+                <th>Type</th>
+                <th>TAX</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="productsTableBody">
+              <tr>
+                <td colspan="9" style="text-align: center;">Loading products...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stock Take Tab -->
+    <div id="tab-stocktake" class="tab-content">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Stock Take</h2>
+          <div style="display: flex; gap: 0.25rem;">
+            <button class="btn btn-primary btn-sm" onclick="loadStockTakeProducts()"><i class="fas fa-sync-alt"></i></button>
+            <button class="btn btn-success btn-sm" onclick="exportStockTakePDF()"><i class="fas fa-file-pdf"></i></button>
+          </div>
+        </div>
+        
+        <div class="form-grid" style="margin-bottom: 0.75rem; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));">
+          <div class="form-group">
+            <label>Branch</label>
+            <select id="stockTakeBranch" onchange="loadStockTakeProducts()">
+              <option value="Main">Main</option>
+              <option value="Branch2">Branch 2</option>
+              <option value="Branch3">Branch 3</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Cashier</label>
+            <select id="stockTakeCashier"></select>
+          </div>
+          <div class="form-group">
+            <label>Search</label>
+            <input type="text" id="stockTakeSearch" placeholder="Filter..." onkeyup="filterStockTakeTable()">
+          </div>
+        </div>
+        
+        <!-- Stock Take Table (scrollable, shows 10 rows then scroll) -->
+        <div class="table-container">
+          <table id="stockTakeTable">
+            <thead>
+              <tr>
+                <th>Code</th>
+                <th>Product</th>
+                <th>Exp</th>
+                <th>Counted</th>
+                <th>Var</th>
+                <th>Value Var</th>
+              </tr>
+            </thead>
+            <tbody id="stockTakeTableBody">
+              <tr><td colspan="6" style="text-align: center;">Loading products...</td></tr>
+            </tbody>
+          </table>
+        </div>
+        
+        <div style="display: flex; gap: 0.5rem; justify-content: flex-end; margin-top: 0.75rem; flex-wrap: wrap;">
+          <button class="btn btn-danger btn-sm" onclick="resetStockTakeCounts()"><i class="fas fa-undo"></i> Reset</button>
+          <button class="btn btn-success btn-sm" onclick="completeStockTakeBatch()"><i class="fas fa-check-circle"></i> Complete</button>
+          <button class="btn btn-info btn-sm" onclick="exportStockTakeVariancePDF()"><i class="fas fa-file-pdf"></i> Variance</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stock Take History Tab -->
+    <div id="tab-history" class="tab-content">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Stock Take History</h2>
+          <div style="display: flex; gap: 0.25rem;">
+            <button class="btn btn-primary btn-sm" onclick="loadStockTakeHistory()"><i class="fas fa-search"></i></button>
+            <button class="btn btn-success btn-sm" onclick="exportStockTakeHistoryPDF()"><i class="fas fa-file-pdf"></i></button>
+          </div>
+        </div>
+        
+        <div class="form-grid" style="grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));">
+          <div class="form-group">
+            <label>Branch</label>
+            <select id="historyBranch">
+              <option value="Main">Main</option>
+              <option value="Branch2">Branch 2</option>
+              <option value="Branch3">Branch 3</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Start Date</label>
+            <input type="date" id="historyStartDate">
+          </div>
+          <div class="form-group">
+            <label>End Date</label>
+            <input type="date" id="historyEndDate">
+          </div>
+          <div class="form-group">
+            <label>Cashier</label>
+            <input type="text" id="historyCashier" placeholder="Cashier name">
+          </div>
+        </div>
+        
+        <div class="table-container">
+          <table id="historyTable">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Reason</th>
+                <th>Branch</th>
+                <th>Cashier</th>
+                <th>Product</th>
+                <th>Code</th>
+                <th>Change</th>
+                <th>Value</th>
+              </tr>
+            </thead>
+            <tbody id="historyTableBody">
+              <tr><td colspan="8" style="text-align: center;">Select filters and click Filter</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <a href="index.html" class="footer-item" id="footer-home">
+      <i class="fas fa-home footer-icon"></i>
+      <span>Home</span>
+    </a>
+    <a href="products.html" class="footer-item active" id="footer-products">
+      <i class="fas fa-box-open footer-icon"></i>
+      <span>Products</span>
+    </a>
+    <a href="customers.html" class="footer-item" id="footer-customers">
+      <i class="fas fa-users footer-icon"></i>
+      <span>Customers</span>
+    </a>
+    <a href="reports.html" class="footer-item" id="footer-reports">
+      <i class="fas fa-chart-line footer-icon"></i>
+      <span>Reports</span>
+    </a>
+    <a href="cashup.html" class="footer-item" id="footer-cashup">
+      <i class="fas fa-calculator footer-icon"></i>
+      <span>Cashup</span>
+    </a>
+  </footer>
+
+  <!-- Stock Action Modal (Receive/Remove Stock) -->
+  <div id="stockModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title" id="stockModalTitle">Receive Stock</h3>
+        <span class="close" onclick="closeModal('stockModal')">&times;</span>
+      </div>
+      <div class="modal-body">
+        <!-- Search Section -->
+        <div class="form-group" style="position: relative;">
+          <label>Search Product</label>
+          <input type="text" id="productSearchInput" placeholder="Type product name or code..." onkeyup="searchProductsForStock()" autocomplete="off">
+          <div id="searchSuggestions" class="suggestions-list" style="display: none;"></div>
+        </div>
+        
+        <button class="btn btn-info btn-sm" style="width: 100%; margin-bottom: 0.75rem;" onclick="openNewProductInModal()">
+          <i class="fas fa-plus"></i> New Product (not in system)
+        </button>
+        
+        <!-- Product Form (populated when product selected) -->
+        <form id="stockActionForm">
+          <div class="form-group">
+            <label>Product Name</label>
+            <input type="text" id="stockProductName" readonly style="background: #f5f5f5;">
+          </div>
+          
+          <div class="form-group">
+            <label>Product Code</label>
+            <input type="text" id="stockProductCode" readonly style="background: #f5f5f5;">
+          </div>
+          
+          <div class="form-group">
+            <label>Branch</label>
+            <select id="stockBranch">
+              <option value="Main">Main</option>
+              <option value="Branch2">Branch 2</option>
+              <option value="Branch3">Branch 3</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label>Cost Price</label>
+            <input type="number" id="stockCost" step="0.01" min="0" oninput="calculateProfitPreview()">
+          </div>
+          
+          <div class="form-group">
+            <label>Selling Price</label>
+            <input type="number" id="stockPrice" step="0.01" min="0" oninput="calculateProfitPreview()">
+          </div>
+          
+          <div class="form-group">
+            <label>Quantity</label>
+            <input type="number" id="stockQuantity" step="1" min="1" value="1" oninput="calculateProfitPreview()">
+          </div>
+          
+          <div class="form-group">
+            <label>Reason</label>
+            <input type="text" id="stockReason" value="Stock adjustment">
+          </div>
+          
+          <!-- Profit Preview -->
+          <div class="profit-preview" id="profitPreview">
+            <h4>Profit Preview</h4>
+            <p><strong>GP per unit:</strong> $0.00</p>
+            <p><strong>GP Percentage:</strong> 0%</p>
+            <p><strong>Total GP:</strong> $0.00</p>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-danger btn-sm" onclick="closeModal('stockModal')">Cancel</button>
+        <button class="btn btn-warning btn-sm" id="removeStockBtn" style="display: none;" onclick="submitStockAction('remove')">Remove Stock</button>
+        <button class="btn btn-success btn-sm" id="receiveStockBtn" onclick="submitStockAction('receive')">Receive Stock</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add New Product Modal (inside stock modal flow) -->
+  <div id="addNewProductModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">Add New Product</h3>
+        <span class="close" onclick="closeModal('addNewProductModal')">&times;</span>
+      </div>
+      <div class="modal-body">
+        <form id="newProductForm">
+          <div class="form-group">
+            <label>Product Name *</label>
+            <input type="text" id="newProductName" required>
+          </div>
+          <div class="form-group">
+            <label>Branch *</label>
+            <select id="newProductBranch" required>
+              <option value="Main">Main</option>
+              <option value="Branch2">Branch 2</option>
+              <option value="Branch3">Branch 3</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Cost Price *</label>
+            <input type="number" id="newProductCost" step="0.01" min="0" required oninput="calculateNewProductProfit()">
+          </div>
+          <div class="form-group">
+            <label>Selling Price *</label>
+            <input type="number" id="newProductPrice" step="0.01" min="0" required oninput="calculateNewProductProfit()">
+          </div>
+          <div class="form-group">
+            <label>Initial Stock *</label>
+            <input type="number" id="newProductStock" step="1" min="0" value="0" required oninput="calculateNewProductProfit()">
+          </div>
+          <div class="form-group">
+            <label>Item Type</label>
+            <select id="newProductItem">
+              <option value="each">Each</option>
+              <option value="kg">Kilogram</option>
+              <option value="litre">Litre</option>
+              <option value="box">Box</option>
+              <option value="pack">Pack</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>TAX %</label>
+            <input type="number" id="newProductTax" step="0.1" value="15.5">
+          </div>
+          
+          <div class="profit-preview" id="newProductProfitPreview">
+            <h4>Profit Preview</h4>
+            <p><strong>GP per unit:</strong> $0.00</p>
+            <p><strong>GP Percentage:</strong> 0%</p>
+            <p><strong>Total GP (initial stock):</strong> $0.00</p>
+          </div>
+        </form>
+        <p class="text-info"><i class="fas fa-info-circle"></i> Product code will be auto-generated</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-danger btn-sm" onclick="closeModal('addNewProductModal')">Cancel</button>
+        <button class="btn btn-success btn-sm" onclick="addNewProductAndStock()">Add Product & Stock</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="productDetailModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">Product Details</h3>
+        <span class="close" onclick="closeModal('productDetailModal')">&times;</span>
+      </div>
+      <div class="modal-body" id="productDetailBody"></div>
+      <div class="modal-footer">
+        <button class="btn btn-primary btn-sm" onclick="closeModal('productDetailModal')">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="alertModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title" id="alertTitle">Alert</h3>
+        <span class="close" onclick="closeModal('alertModal')">&times;</span>
+      </div>
+      <div class="modal-body" id="alertMessage"></div>
+      <div class="modal-footer">
+        <button class="btn btn-primary btn-sm" onclick="closeModal('alertModal')">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="loadingOverlay" class="loading-overlay">
+    <div style="text-align: center;">
+      <div class="spinner"></div>
+      <div class="loading-text" id="loadingText">Processing...</div>
+    </div>
+  </div>
+
+<script>
+    // Configuration
+    const API_URL = 'https://script.google.com/macros/s/AKfycbxHRLkbRglqCdelnzY4R2D-nX3ZyXSXyP6mEEIf9Twx0tG717QiFEHSWioqw0zv1Wg/exec';
+    
+    // Global variables
+    let currentProducts = [];
+    let currentBranch = 'Main';
+    let currentUser = null;
+    let stockTakeProducts = [];
+    let stockTakeCounts = new Map();
+    let searchTimeout = null;
+    let currentStockAction = 'receive';
+    
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+      checkLogin();
+      loadProducts();
+      loadCashiers();
+      setupEventListeners();
+      setDefaultDates();
+    });
+    
+    function setDefaultDates() {
+      const today = new Date().toISOString().split('T')[0];
+      const firstDay = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0];
+      document.getElementById('historyStartDate').value = firstDay;
+      document.getElementById('historyEndDate').value = today;
+    }
+    
+    // Check login
+    function checkLogin() {
+      const username = localStorage.getItem('username');
+      const role = localStorage.getItem('role');
+      const branch = localStorage.getItem('branch');
+      
+      if (!username || !role || !branch) {
+        window.location.href = 'index.html';
+        return;
+      }
+      
+      currentUser = { username, role, branch };
+      document.getElementById('welcomeMessage').textContent = username;
+      document.getElementById('userAvatar').textContent = username.charAt(0).toUpperCase();
+      
+      document.querySelectorAll('select[id$="Branch"]').forEach(select => {
+        if (select.id !== 'viewBranchSelect' && select.id !== 'historyBranch' && select.id !== 'stockTakeBranch') {
+          select.value = branch;
+        }
+      });
+      document.getElementById('viewBranchSelect').value = branch;
+      document.getElementById('stockTakeBranch').value = branch;
+      document.getElementById('historyBranch').value = branch;
+      document.getElementById('stockBranch').value = branch;
+    }
+    
+    // Load cashiers from sheet
+    async function loadCashiers() {
+      try {
+        const response = await fetch(`${API_URL}?action=get_cashiers`);
+        const data = await response.json();
+        if (data.status === 'success') {
+          const select = document.getElementById('stockTakeCashier');
+          select.innerHTML = data.cashiers.map(c => `<option value="${c}">${c}</option>`).join('');
+        }
+      } catch (error) {
+        console.error('Error loading cashiers:', error);
+      }
+    }
+    
+    // Setup event listeners
+    function setupEventListeners() {
+      const updateProductForm = document.getElementById('updateProductForm');
+      if (updateProductForm) {
+        updateProductForm.addEventListener('submit', function(e) {
+          e.preventDefault();
+          updateProduct();
+        });
+      }
+      
+      const logoutBtn = document.getElementById('logoutBtn');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', function() {
+          localStorage.clear();
+          window.location.href = 'index.html';
+        });
+      }
+    }
+    
+    // Switch tabs
+    function switchTab(tabName) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      
+      const tab = document.querySelector(`.tab[onclick="switchTab('${tabName}')"]`);
+      if (tab) tab.classList.add('active');
+      
+      const tabContent = document.getElementById(`tab-${tabName}`);
+      if (tabContent) tabContent.classList.add('active');
+      
+      if (tabName === 'stocktake') {
+        loadStockTakeProducts();
+      }
+      if (tabName === 'history') {
+        loadStockTakeHistory();
+      }
+    }
+    
+    // Show/hide update panel
+    function showUpdatePanel(code) {
+      document.getElementById('updatePanel').classList.add('show');
+      document.getElementById('updateCode').value = code;
+      document.getElementById('updateBranch').value = currentBranch;
+      fetchProductForUpdate(code);
+    }
+    
+    function hideUpdatePanel() {
+      document.getElementById('updatePanel').classList.remove('show');
+      document.getElementById('updateProductForm').reset();
+    }
+    
+    // Fetch product details for update
+    async function fetchProductForUpdate(code) {
+      showLoading('Fetching product...');
+      try {
+        const response = await fetch(`${API_URL}?action=get_product_by_code&branch=${encodeURIComponent(currentBranch)}&code=${encodeURIComponent(code)}`);
+        const data = await response.json();
+        if (data.status === 'success' && data.data) {
+          const p = data.data;
+          document.getElementById('updateProduct').value = p.product || p.Product || '';
+          document.getElementById('updateCost').value = p.cost || p.Cost || '';
+          document.getElementById('updatePrice').value = p.price || p.Price || '';
+          document.getElementById('updateTax').value = p.tax || p.TAX || '';
+          document.getElementById('updateItem').value = p.item || p.Item || '';
+        } else {
+          showAlert('Error', 'Product not found');
+        }
+      } catch (error) {
+        console.error(error);
+        showAlert('Error', 'Failed to fetch product');
+      } finally {
+        hideLoading();
+      }
+    }
+    
+    // Update product
+    async function updateProduct() {
+      const params = new URLSearchParams({
+        action: 'update_product',
+        old_code: document.getElementById('updateCode').value,
+        branch: document.getElementById('updateBranch').value
+      });
+      
+      if (document.getElementById('updateProduct').value) params.append('product', document.getElementById('updateProduct').value);
+      if (document.getElementById('updateCost').value) params.append('cost', document.getElementById('updateCost').value);
+      if (document.getElementById('updatePrice').value) params.append('price', document.getElementById('updatePrice').value);
+      if (document.getElementById('updateTax').value) params.append('tax', document.getElementById('updateTax').value);
+      if (document.getElementById('updateItem').value) params.append('item', document.getElementById('updateItem').value);
+      
+      if (params.toString().split('&').length <= 2) {
+        return showAlert('Warning', 'Please fill at least one field to update');
+      }
+      
+      showLoading('Updating...');
+      try {
+        const response = await fetch(`${API_URL}?${params}`);
+        const data = await response.json();
+        if (data.status === 'success') {
+          showAlert('Success', 'Product updated!');
+          hideUpdatePanel();
+          loadProducts();
+        } else {
+          showAlert('Error', data.message || 'Update failed');
+        }
+      } catch (error) {
+        console.error(error);
+        showAlert('Error', 'Update failed');
+      } finally {
+        hideLoading();
+      }
+    }
+    
+    // Load products for view tab
+    async function loadProducts() {
+      const branch = document.getElementById('viewBranchSelect').value;
+      currentBranch = branch;
+      
+      showLoading('Loading products...');
+      
+      try {
+        const response = await fetch(`${API_URL}?action=json&branch=${encodeURIComponent(branch)}`);
+        const data = await response.json();
+        
+        if (data.status === 'success') {
+          currentProducts = data.data || [];
+          displayProducts(currentProducts);
+          updateSummary(data.summary);
+        } else {
+          showAlert('Error', data.message || 'Failed to load products');
+        }
+      } catch (error) {
+        console.error('Error loading products:', error);
+        showAlert('Error', 'Failed to load products. Please try again.');
+      } finally {
+        hideLoading();
+      }
+    }
+    
+    // Display products
+    function displayProducts(products) {
+      const tbody = document.getElementById('productsTableBody');
+      
+      if (!products || !products.length) {
+        tbody.innerHTML = '<tr><td colspan="9" style="text-align: center;">No products found</td></tr>';
+        return;
+      }
+      
+      const productMap = new Map();
+      products.forEach(p => {
+        const key = `${p.code}-${p.Product}`;
+        if (!productMap.has(key)) {
+          productMap.set(key, {
+            code: p.code,
+            name: p.Product,
+            cost: parseFloat(p.Cost) || 0,
+            price: parseFloat(p.Price) || 0,
+            stock: 0,
+            item: p.item || 'each',
+            tax: parseFloat(p.TAX) || 15.5,
+            rows: []
+          });
+        }
+        const product = productMap.get(key);
+        const stockQty = parseFloat(p.Stock) || 0;
+        product.stock += stockQty;
+        product.rows.push(p);
+      });
+      
+      const aggregated = Array.from(productMap.values());
+      
+      tbody.innerHTML = aggregated.map(p => {
+        const value = p.stock * p.price;
+        const stockClass = p.stock > 10 ? 'stock-high' : p.stock > 3 ? 'stock-medium' : 'stock-low';
+        
+        return `
+          <tr>
+            <td><strong>${p.code || '-'}</strong></td>
+            <td>${p.name}</td>
+            <td>$${p.cost.toFixed(2)}</td>
+            <td>$${p.price.toFixed(2)}</td>
+            <td class="${stockClass}">${p.stock}</td>
+            <td>$${value.toFixed(2)}</td>
+            <td>${p.item}</td>
+            <td>${p.tax}%</td>
+            <td>
+              <div class="action-btns">
+                <button class="btn btn-info btn-sm" onclick="viewProductDetails('${p.code}')" title="View">
+                  <i class="fas fa-eye"></i>
+                </button>
+                <button class="btn btn-warning btn-sm" onclick="showUpdatePanel('${p.code}')" title="Edit">
+                  <i class="fas fa-edit"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+    
+    // Update summary
+    function updateSummary(summary) {
+      if (summary) {
+        document.getElementById('totalProducts').textContent = summary.total_products || 0;
+        document.getElementById('totalStock').textContent = summary.total_stock || 0;
+        document.getElementById('totalValue').textContent = `$${(summary.total_value || 0).toFixed(2)}`;
+      }
+    }
+    
+    // Filter products in view
+    function filterProducts() {
+      const searchTerm = document.getElementById('viewSearch').value.toLowerCase();
+      if (!searchTerm) return displayProducts(currentProducts);
+      const filtered = currentProducts.filter(p => 
+        (p.Product && p.Product.toLowerCase().includes(searchTerm)) ||
+        (p.code && p.code.toString().toLowerCase().includes(searchTerm))
+      );
+      displayProducts(filtered);
+    }
+    
+    function clearFilter() {
+      document.getElementById('viewSearch').value = '';
+      displayProducts(currentProducts);
+    }
+    
+    // Stock Modal Functions
+    function openStockModal() {
+      document.getElementById('stockModalTitle').textContent = 'Receive Stock';
+      document.getElementById('receiveStockBtn').style.display = 'inline-flex';
+      document.getElementById('removeStockBtn').style.display = 'none';
+      currentStockAction = 'receive';
+      clearStockForm();
+      openModal('stockModal');
+    }
+    
+    function openRemoveStockModal() {
+      document.getElementById('stockModalTitle').textContent = 'Remove Stock';
+      document.getElementById('receiveStockBtn').style.display = 'none';
+      document.getElementById('removeStockBtn').style.display = 'inline-flex';
+      currentStockAction = 'remove';
+      clearStockForm();
+      openModal('stockModal');
+    }
+    
+    function clearStockForm() {
+      document.getElementById('stockProductName').value = '';
+      document.getElementById('stockProductCode').value = '';
+      document.getElementById('stockCost').value = '';
+      document.getElementById('stockPrice').value = '';
+      document.getElementById('stockQuantity').value = '1';
+      document.getElementById('stockReason').value = currentStockAction === 'receive' ? 'Stock receiving' : 'Stock removal';
+      document.getElementById('productSearchInput').value = '';
+      document.getElementById('searchSuggestions').style.display = 'none';
+      calculateProfitPreview();
+    }
+    
+    // Search products for stock modal
+    async function searchProductsForStock() {
+      const searchTerm = document.getElementById('productSearchInput').value.trim();
+      const suggestionsDiv = document.getElementById('searchSuggestions');
+      
+      if (searchTerm.length < 2) {
+        suggestionsDiv.style.display = 'none';
+        return;
+      }
+      
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(async () => {
+        try {
+          const response = await fetch(`${API_URL}?action=search_products&branch=${encodeURIComponent(currentBranch)}&search=${encodeURIComponent(searchTerm)}`);
+          const data = await response.json();
+          
+          if (data.status === 'success' && data.results && data.results.length > 0) {
+            suggestionsDiv.innerHTML = data.results.map(p => `
+              <div class="suggestion-item" onclick="selectProductForStock('${p.code}', '${p.product.replace(/'/g, "\\'")}', ${p.cost}, ${p.price})">
+                <strong>${p.code}</strong> - ${p.product}<br>
+                <small>Price: $${parseFloat(p.price).toFixed(2)} | Stock: ${p.stock}</small>
+              </div>
+            `).join('');
+            suggestionsDiv.style.display = 'block';
+          } else {
+            suggestionsDiv.innerHTML = '<div class="suggestion-item">No products found</div>';
+            suggestionsDiv.style.display = 'block';
+          }
+        } catch (error) {
+          console.error('Search error:', error);
+        }
+      }, 300);
+    }
+    
+    function selectProductForStock(code, name, cost, price) {
+      document.getElementById('stockProductCode').value = code;
+      document.getElementById('stockProductName').value = name;
+      document.getElementById('stockCost').value = cost;
+      document.getElementById('stockPrice').value = price;
+      document.getElementById('productSearchInput').value = name;
+      document.getElementById('searchSuggestions').style.display = 'none';
+      calculateProfitPreview();
+    }
+    
+    function calculateProfitPreview() {
+      const cost = parseFloat(document.getElementById('stockCost').value) || 0;
+      const price = parseFloat(document.getElementById('stockPrice').value) || 0;
+      const quantity = parseFloat(document.getElementById('stockQuantity').value) || 0;
+      
+      const gpPerUnit = price - cost;
+      const gpPercentage = price > 0 ? (gpPerUnit / price * 100) : 0;
+      const totalGp = gpPerUnit * quantity;
+      
+      document.getElementById('profitPreview').innerHTML = `
+        <h4>Profit Preview</h4>
+        <p><strong>GP per unit:</strong> $${gpPerUnit.toFixed(2)}</p>
+        <p><strong>GP Percentage:</strong> ${gpPercentage.toFixed(1)}%</p>
+        <p><strong>Total GP:</strong> $${totalGp.toFixed(2)}</p>
+      `;
+    }
+    
+    function calculateNewProductProfit() {
+      const cost = parseFloat(document.getElementById('newProductCost').value) || 0;
+      const price = parseFloat(document.getElementById('newProductPrice').value) || 0;
+      const stock = parseFloat(document.getElementById('newProductStock').value) || 0;
+      
+      const gpPerUnit = price - cost;
+      const gpPercentage = price > 0 ? (gpPerUnit / price * 100) : 0;
+      const totalGp = gpPerUnit * stock;
+      
+      document.getElementById('newProductProfitPreview').innerHTML = `
+        <h4>Profit Preview</h4>
+        <p><strong>GP per unit:</strong> $${gpPerUnit.toFixed(2)}</p>
+        <p><strong>GP Percentage:</strong> ${gpPercentage.toFixed(1)}%</p>
+        <p><strong>Total GP (initial stock):</strong> $${totalGp.toFixed(2)}</p>
+      `;
+    }
+    
+    async function submitStockAction(action) {
+      const productName = document.getElementById('stockProductName').value;
+      const productCode = document.getElementById('stockProductCode').value;
+      const branch = document.getElementById('stockBranch').value;
+      const cost = parseFloat(document.getElementById('stockCost').value);
+      const price = parseFloat(document.getElementById('stockPrice').value);
+      let quantity = parseFloat(document.getElementById('stockQuantity').value);
+      const reason = document.getElementById('stockReason').value;
+      
+      if (!productName || !productCode) {
+        return showAlert('Error', 'Please select a product first');
+      }
+      
+      if (isNaN(cost) || cost <= 0) {
+        return showAlert('Error', 'Valid cost price is required');
+      }
+      
+      if (isNaN(price) || price <= 0) {
+        return showAlert('Error', 'Valid selling price is required');
+      }
+      
+      if (isNaN(quantity) || quantity <= 0) {
+        return showAlert('Error', 'Valid quantity is required');
+      }
+      
+      // For remove action, make quantity negative
+      if (action === 'remove') {
+        quantity = -Math.abs(quantity);
+      }
+      
+      const params = new URLSearchParams({
+        action: 'update_stock',
+        product: productName,
+        code: productCode,
+        branch: branch,
+        cost: cost,
+        price: price,
+        stock: quantity,
+        reason: reason,
+        cashier: currentUser?.username || 'System',
+        receipt_no: `STK_${Date.now()}`
+      });
+      
+      showLoading('Processing...');
+      try {
+        const response = await fetch(`${API_URL}?${params}`);
+        const data = await response.json();
+        if (data.status === 'success') {
+          showAlert('Success', `${Math.abs(quantity)} units ${action === 'receive' ? 'added to' : 'removed from'} ${productName}`);
+          closeModal('stockModal');
+          loadProducts();
+        } else {
+          showAlert('Error', data.message || 'Action failed');
+        }
+      } catch (error) {
+        console.error(error);
+        showAlert('Error', 'Action failed');
+      } finally {
+        hideLoading();
+      }
+    }
+    
+    // New product in modal flow
+    function openNewProductInModal() {
+      closeModal('stockModal');
+      document.getElementById('newProductForm').reset();
+      document.getElementById('newProductBranch').value = currentBranch;
+      document.getElementById('newProductTax').value = '15.5';
+      document.getElementById('newProductStock').value = '0';
+      calculateNewProductProfit();
+      openModal('addNewProductModal');
+    }
+    
+    async function addNewProductAndStock() {
+      const productName = document.getElementById('newProductName').value;
+      const branch = document.getElementById('newProductBranch').value;
+      const cost = parseFloat(document.getElementById('newProductCost').value);
+      const price = parseFloat(document.getElementById('newProductPrice').value);
+      const initialStock = parseFloat(document.getElementById('newProductStock').value) || 0;
+      const item = document.getElementById('newProductItem').value;
+      const tax = parseFloat(document.getElementById('newProductTax').value) || 15.5;
+      
+      if (!productName) {
+        return showAlert('Error', 'Product name is required');
+      }
+      
+      if (isNaN(cost) || cost <= 0) {
+        return showAlert('Error', 'Cost price is required and must be greater than 0');
+      }
+      
+      if (isNaN(price) || price <= 0) {
+        return showAlert('Error', 'Selling price is required and must be greater than 0');
+      }
+      
+      const code = 'P' + Date.now().toString().slice(-6);
+      
+      const params = new URLSearchParams({
+        action: 'add_product',
+        product: productName,
+        code: code,
+        branch: branch,
+        cost: cost,
+        price: price,
+        initial_stock: initialStock,
+        item: item,
+        tax: tax,
+        cashier: currentUser?.username || 'System',
+        reason: 'New product added'
+      });
+      
+      showLoading('Adding product...');
+      try {
+        const response = await fetch(API_URL, {
+          method: 'POST',
+          body: params
+        });
+        const data = await response.json();
+        if (data.status === 'success') {
+          showAlert('Success', `New product added! Code: ${code}`);
+          closeModal('addNewProductModal');
+          loadProducts();
+          
+          // Re-open stock modal with the new product selected
+          setTimeout(() => {
+            document.getElementById('stockProductCode').value = code;
+            document.getElementById('stockProductName').value = productName;
+            document.getElementById('stockCost').value = cost;
+            document.getElementById('stockPrice').value = price;
+            document.getElementById('stockQuantity').value = '1';
+            openModal('stockModal');
+          }, 500);
+        } else {
+          showAlert('Error', data.message || 'Failed to add product');
+        }
+      } catch (error) {
+        console.error(error);
+        showAlert('Error', 'Failed to add product');
+      } finally {
+        hideLoading();
+      }
+    }
+    
+    // View details
+    async function viewProductDetails(code) {
+      const branch = document.getElementById('viewBranchSelect').value;
+      showLoading('Loading...');
+      try {
+        const response = await fetch(`${API_URL}?action=get_product_by_code&branch=${encodeURIComponent(branch)}&code=${encodeURIComponent(code)}`);
+        const data = await response.json();
+        if (data.status === 'success' && data.data) {
+          const p = data.data;
+          document.getElementById('productDetailBody').innerHTML = `
+            <p><strong>Code:</strong> ${p.code || '-'}</p>
+            <p><strong>Name:</strong> ${p.product || p.Product || '-'}</p>
+            <p><strong>Branch:</strong> ${p.branch || branch}</p>
+            <p><strong>Cost:</strong> $${parseFloat(p.cost || p.Cost || 0).toFixed(2)}</p>
+            <p><strong>Price:</strong> $${parseFloat(p.price || p.Price || 0).toFixed(2)}</p>
+            <p><strong>Stock:</strong> ${parseFloat(p.stock || p.Stock || 0)}</p>
+            <p><strong>Item Type:</strong> ${p.item || p.Item || 'each'}</p>
+            <p><strong>TAX:</strong> ${p.tax || p.TAX || 15.5}%</p>
+          `;
+          openModal('productDetailModal');
+        } else {
+          showAlert('Error', 'Could not load details');
+        }
+      } catch (error) {
+        console.error(error);
+        showAlert('Error', 'Failed to load details');
+      } finally {
+        hideLoading();
+      }
+    }
+    
+    // Stock Take functions with BATCH method
+    async function loadStockTakeProducts() {
+      const branch = document.getElementById('stockTakeBranch').value;
+      showLoading('Loading products...');
+      try {
+        const response = await fetch(`${API_URL}?action=json&branch=${encodeURIComponent(branch)}`);
+        const data = await response.json();
+        if (data.status === 'success') {
+          const products = data.data || [];
+          const productMap = new Map();
+          products.forEach(p => {
+            const key = `${p.code}-${p.Product}`;
+            if (!productMap.has(key)) {
+              productMap.set(key, {
+                code: p.code,
+                product: p.Product,
+                expected: 0,
+                price: parseFloat(p.Price) || 0,
+                cost: parseFloat(p.Cost) || 0
+              });
+            }
+            productMap.get(key).expected += parseFloat(p.Stock) || 0;
+          });
+          stockTakeProducts = Array.from(productMap.values());
+          stockTakeProducts.forEach(p => {
+            const key = p.code + '|' + p.product;
+            if (!stockTakeCounts.has(key)) stockTakeCounts.set(key, '');
+          });
+          renderStockTakeTable();
+        } else {
+          showAlert('Error', 'Failed to load products');
+        }
+      } catch (error) {
+        console.error(error);
+        showAlert('Error', 'Failed to load products');
+      } finally {
+        hideLoading();
+      }
+    }
+    
+    function renderStockTakeTable() {
+      const tbody = document.getElementById('stockTakeTableBody');
+      const searchTerm = document.getElementById('stockTakeSearch').value.toLowerCase();
+      
+      let filtered = stockTakeProducts;
+      if (searchTerm) {
+        filtered = stockTakeProducts.filter(p => 
+          (p.product && p.product.toLowerCase().includes(searchTerm)) ||
+          (p.code && p.code.toString().toLowerCase().includes(searchTerm))
+        );
+      }
+      
+      if (!filtered.length) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No products</td></tr>';
+        return;
+      }
+      
+      let totalVariance = 0;
+      let totalValueVariance = 0;
+      
+      const rows = filtered.map(p => {
+        const key = p.code + '|' + p.product;
+        const counted = stockTakeCounts.get(key) || '';
+        const countedNum = counted !== '' ? (parseFloat(counted) || 0) : null;
+        const variance = countedNum !== null ? countedNum - p.expected : null;
+        const valueVariance = variance !== null ? variance * p.price : null;
+        
+        if (variance !== null) {
+          totalVariance += variance;
+          totalValueVariance += valueVariance;
+        }
+        
+        const varianceClass = variance === null ? '' : (variance > 0 ? 'variance-positive' : (variance < 0 ? 'variance-negative' : ''));
+        
+        return `
+          <tr>
+            <td>${p.code || '-'}</td>
+            <td>${p.product}</td>
+            <td>${p.expected}</td>
+            <td><input type="number" class="counted-input" data-key="${key}" value="${counted}" onchange="updateCountFromInput(this)" onblur="renderStockTakeTable()"></td>
+            <td class="${varianceClass}">${variance !== null ? variance : '-'}</td>
+            <td>${valueVariance !== null ? '$' + valueVariance.toFixed(2) : '-'}</td>
+          </tr>
+        `;
+      }).join('');
+      
+      const totalRow = `
+        <tr style="background: #f0f4f8; font-weight: bold;">
+          <td colspan="3" style="text-align: right;"><strong>TOTAL:</strong></td>
+          <td></td>
+          <td class="${totalVariance > 0 ? 'variance-positive' : (totalVariance < 0 ? 'variance-negative' : '')}">${totalVariance}</td>
+          <td class="${totalValueVariance > 0 ? 'variance-positive' : (totalValueVariance < 0 ? 'variance-negative' : '')}">$${totalValueVariance.toFixed(2)}</td>
+        </tr>
+      `;
+      
+      tbody.innerHTML = rows + totalRow;
+    }
+    
+    window.updateCountFromInput = function(input) {
+      const key = input.dataset.key;
+      const val = input.value.trim();
+      if (val === '' || !isNaN(val) && parseFloat(val) >= 0) {
+        stockTakeCounts.set(key, val);
+      } else {
+        input.value = stockTakeCounts.get(key) || '';
+      }
+    };
+    
+    function filterStockTakeTable() {
+      renderStockTakeTable();
+    }
+    
+    function resetStockTakeCounts() {
+      stockTakeCounts.clear();
+      stockTakeProducts.forEach(p => {
+        const key = p.code + '|' + p.product;
+        stockTakeCounts.set(key, '');
+      });
+      renderStockTakeTable();
+    }
+    
+    // BATCH stock take completion - sends all adjustments in ONE request
+    async function completeStockTakeBatch() {
+      const branch = document.getElementById('stockTakeBranch').value;
+      const cashierSelect = document.getElementById('stockTakeCashier');
+      const cashier = cashierSelect.value;
+      
+      if (!cashier) {
+        return showAlert('Error', 'Please select a cashier');
+      }
+      
+      const stockTakeData = [];
+      for (let p of stockTakeProducts) {
+        const key = p.code + '|' + p.product;
+        const counted = stockTakeCounts.get(key);
+        if (counted !== undefined && counted !== '' && parseFloat(counted) !== p.expected) {
+          stockTakeData.push({
+            product: p.product,
+            code: p.code,
+            counted_stock: parseFloat(counted) || 0
+          });
+        }
+      }
+      
+      if (stockTakeData.length === 0) {
+        return showAlert('Info', 'No stock changes detected');
+      }
+      
+      const stockTakeId = 'ST' + Date.now();
+      
+      showLoading('Processing stock take batch...');
+      try {
+        // Send ALL adjustments in ONE batch request
+        const params = new URLSearchParams({
+          action: 'stock_take',
+          branch: branch,
+          cashier: cashier,
+          stock_take_id: stockTakeId,
+          stock_take_data: JSON.stringify(stockTakeData)
+        });
+        
+        const response = await fetch(`${API_URL}?${params}`);
+        const data = await response.json();
+        
+        if (data.status === 'success') {
+          showAlert('Success', `Stock take completed.\nTotal Variance: ${data.total_variance} units\nTotal Value: $${data.total_value_variance.toFixed(2)}`);
+          stockTakeCounts.clear();
+          loadStockTakeProducts();
+          loadProducts();
+        } else {
+          showAlert('Error', data.message || 'Stock take failed');
+        }
+      } catch (error) {
+        console.error(error);
+        showAlert('Error', 'Stock take failed');
+      } finally {
+        hideLoading();
+      }
+    }
+    
+    // PDF export functions
+    function exportCurrentStockPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF('landscape');
+      
+      doc.setFontSize(18);
+      doc.text('Hair Mash Point Of Sale', 14, 22);
+      doc.setFontSize(12);
+      doc.text(`Current Stock Report - ${currentBranch}`, 14, 32);
+      doc.text(`Generated: ${new Date().toLocaleString()}`, 14, 38);
+      
+      const productMap = new Map();
+      currentProducts.forEach(p => {
+        const key = `${p.code}-${p.Product}`;
+        if (!productMap.has(key)) {
+          productMap.set(key, {
+            code: p.code,
+            name: p.Product,
+            cost: parseFloat(p.Cost) || 0,
+            price: parseFloat(p.Price) || 0,
+            stock: 0,
+            item: p.item || 'each',
+            tax: parseFloat(p.TAX) || 15.5
+          });
+        }
+        productMap.get(key).stock += parseFloat(p.Stock) || 0;
+      });
+      
+      const products = Array.from(productMap.values());
+      
+      const tableColumn = ["Code", "Product", "Cost", "Price", "Stock", "Value", "Item", "TAX%"];
+      const tableRows = products.map(p => [
+        p.code || '',
+        p.name || '',
+        `$${p.cost.toFixed(2)}`,
+        `$${p.price.toFixed(2)}`,
+        p.stock.toString(),
+        `$${(p.stock * p.price).toFixed(2)}`,
+        p.item,
+        `${p.tax}%`
+      ]);
+      
+      doc.autoTable({
+        head: [tableColumn],
+        body: tableRows,
+        startY: 45,
+        theme: 'striped',
+        headStyles: { fillColor: [0, 51, 102] }
+      });
+      
+      doc.save(`current_stock_${currentBranch}_${new Date().toISOString().split('T')[0]}.pdf`);
+    }
+    
+    function exportStockTakePDF() {
+      exportCurrentStockPDF();
+    }
+    
+    function exportStockTakeVariancePDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      
+      doc.setFontSize(18);
+      doc.text('Hair Mash Point Of Sale', 14, 22);
+      doc.setFontSize(12);
+      doc.text(`Stock Take Variance Report - ${document.getElementById('stockTakeBranch').value}`, 14, 32);
+      doc.text(`Generated: ${new Date().toLocaleString()}`, 14, 38);
+      
+      const tableColumn = ["Code", "Product", "Expected", "Counted", "Variance", "Value Variance"];
+      const tableRows = [];
+      let totalVariance = 0;
+      let totalValueVariance = 0;
+      
+      stockTakeProducts.forEach(p => {
+        const key = p.code + '|' + p.product;
+        const counted = stockTakeCounts.get(key);
+        if (counted !== undefined && counted !== '') {
+          const countedNum = parseFloat(counted) || 0;
+          const variance = countedNum - p.expected;
+          const valueVariance = variance * p.price;
+          totalVariance += variance;
+          totalValueVariance += valueVariance;
+          
+          tableRows.push([
+            p.code || '',
+            p.product || '',
+            p.expected.toString(),
+            countedNum.toString(),
+            variance.toString(),
+            `$${valueVariance.toFixed(2)}`
+          ]);
+        }
+      });
+      
+      tableRows.push([
+        'TOTAL',
+        '',
+        '',
+        '',
+        totalVariance.toString(),
+        `$${totalValueVariance.toFixed(2)}`
+      ]);
+      
+      doc.autoTable({
+        head: [tableColumn],
+        body: tableRows,
+        startY: 45,
+        theme: 'striped',
+        headStyles: { fillColor: [0, 51, 102] },
+        footStyles: { fillColor: [240, 240, 240], textColor: [0, 0, 0], fontStyle: 'bold' }
+      });
+      
+      doc.save(`stock_variance_${new Date().toISOString().split('T')[0]}.pdf`);
+    }
+    
+    async function loadStockTakeHistory() {
+      const branch = document.getElementById('historyBranch').value;
+      const startDate = document.getElementById('historyStartDate').value;
+      const endDate = document.getElementById('historyEndDate').value;
+      const cashier = document.getElementById('historyCashier').value;
+      
+      showLoading('Loading history...');
+      try {
+        const params = new URLSearchParams({
+          action: 'get_stock_take_history',
+          branch: branch,
+          start_date: startDate,
+          end_date: endDate
+        });
+        if (cashier) params.append('cashier', cashier);
+        
+        const response = await fetch(`${API_URL}?${params}`);
+        const data = await response.json();
+        if (data.status === 'success') {
+          const tbody = document.getElementById('historyTableBody');
+          if (!data.data || data.data.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">No records found</td></tr>';
+          } else {
+            tbody.innerHTML = data.data.map(item => `
+              <tr>
+                <td>${item.date || ''}</td>
+                <td>${item.reason || ''}</td>
+                <td>${item.branch || ''}</td>
+                <td>${item.cashier || ''}</td>
+                <td>${item.product || ''}</td>
+                <td>${item.code || ''}</td>
+                <td>${item.stock_change || 0}</td>
+                <td>$${(item.value_change || 0).toFixed(2)}</td>
+              </tr>
+            `).join('');
+          }
+        } else {
+          showAlert('Error', data.message || 'Failed to load history');
+        }
+      } catch (error) {
+        console.error(error);
+        showAlert('Error', 'Failed to load history');
+      } finally {
+        hideLoading();
+      }
+    }
+    
+    function exportStockTakeHistoryPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF('landscape');
+      
+      doc.setFontSize(18);
+      doc.text('Hair Mash Point Of Sale', 14, 22);
+      doc.setFontSize(12);
+      doc.text(`Stock Take History - ${document.getElementById('historyBranch').value}`, 14, 32);
+      doc.text(`Period: ${document.getElementById('historyStartDate').value} to ${document.getElementById('historyEndDate').value}`, 14, 38);
+      
+      const table = document.getElementById('historyTable');
+      const rows = [];
+      const headers = [];
+      
+      const headerCells = table.querySelectorAll('thead th');
+      headerCells.forEach(th => headers.push(th.textContent));
+      
+      const bodyRows = table.querySelectorAll('tbody tr');
+      bodyRows.forEach(tr => {
+        const row = [];
+        tr.querySelectorAll('td').forEach(td => row.push(td.textContent));
+        if (row.length === headers.length) rows.push(row);
+      });
+      
+      doc.autoTable({
+        head: [headers],
+        body: rows,
+        startY: 45,
+        theme: 'striped',
+        headStyles: { fillColor: [0, 51, 102] }
+      });
+      
+      doc.save(`stock_history_${new Date().toISOString().split('T')[0]}.pdf`);
+    }
+    
+    // UI Helpers
+    function showLoading(message) {
+      const overlay = document.getElementById('loadingOverlay');
+      const text = document.getElementById('loadingText');
+      if (overlay) overlay.style.display = 'flex';
+      if (text) text.textContent = message || 'Processing...';
+    }
+    
+    function hideLoading() {
+      const overlay = document.getElementById('loadingOverlay');
+      if (overlay) overlay.style.display = 'none';
+    }
+    
+    function openModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (modal) modal.classList.add('show');
+    }
+    
+    function closeModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (modal) modal.classList.remove('show');
+    }
+    
+    function showAlert(title, message) {
+      document.getElementById('alertTitle').textContent = title;
+      document.getElementById('alertMessage').textContent = message;
+      openModal('alertModal');
+    }
+    
+    // Close suggestions when clicking outside
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('#productSearchInput')) {
+        document.getElementById('searchSuggestions').style.display = 'none';
+      }
+    });
+    
+    // Make functions global
+    window.switchTab = switchTab;
+    window.loadProducts = loadProducts;
+    window.filterProducts = filterProducts;
+    window.clearFilter = clearFilter;
+    window.viewProductDetails = viewProductDetails;
+    window.showUpdatePanel = showUpdatePanel;
+    window.hideUpdatePanel = hideUpdatePanel;
+    window.closeModal = closeModal;
+    window.openStockModal = openStockModal;
+    window.openRemoveStockModal = openRemoveStockModal;
+    window.searchProductsForStock = searchProductsForStock;
+    window.selectProductForStock = selectProductForStock;
+    window.calculateProfitPreview = calculateProfitPreview;
+    window.submitStockAction = submitStockAction;
+    window.openNewProductInModal = openNewProductInModal;
+    window.addNewProductAndStock = addNewProductAndStock;
+    window.calculateNewProductProfit = calculateNewProductProfit;
+    window.loadStockTakeProducts = loadStockTakeProducts;
+    window.filterStockTakeTable = filterStockTakeTable;
+    window.resetStockTakeCounts = resetStockTakeCounts;
+    window.completeStockTakeBatch = completeStockTakeBatch;
+    window.exportCurrentStockPDF = exportCurrentStockPDF;
+    window.exportStockTakePDF = exportStockTakePDF;
+    window.exportStockTakeVariancePDF = exportStockTakeVariancePDF;
+    window.loadStockTakeHistory = loadStockTakeHistory;
+    window.exportStockTakeHistoryPDF = exportStockTakeHistoryPDF;
+    window.updateCountFromInput = updateCountFromInput;
+  </script>
+</body>
+</html>
